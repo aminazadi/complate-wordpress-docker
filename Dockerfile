@@ -1,5 +1,5 @@
 # Base Image
-FROM php:8.0-apache
+FROM php:8.1-apache
 
 # Add this at the top of your Dockerfile to break cache
 ARG NO_CACHE
@@ -19,22 +19,80 @@ RUN apt-get update && apt-get install -y \
     libjpeg-dev \
     libfreetype6 \
     libfreetype6-dev \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install -j$(nproc) gd \
-    && docker-php-ext-install pdo_mysql \
-    && docker-php-ext-install mysqli \
-    && docker-php-ext-install zip \
-    && docker-php-ext-install exif \
-    && docker-php-ext-install sodium \
-    && docker-php-ext-install soap \
-    && pecl install redis \
+    libbz2-dev \
+    libgmp-dev \
+    libwebp-dev \
+    libxpm-dev \
+    libavif-dev \
+    libreadline-dev \
+    libtidy-dev \
+    libxslt-dev \
+    libssl-dev \
+    libmemcached-dev \
+    libmcrypt-dev \
+    graphicsmagick \
+    graphicsmagick-libmagick-dev-compat
+
+# Configure and install PHP extensions
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp --with-xpm \
+    && docker-php-ext-install -j$(nproc) gd
+
+RUN docker-php-ext-install -j$(nproc) \
+    pdo_mysql \
+    mysqli \
+    zip \
+    exif \
+    sodium \
+    soap \
+    bcmath \
+    calendar \
+    dba \
+    dom \
+    fileinfo \
+    gettext \
+    gmp \
+    iconv \
+    intl \
+    mbstring \
+    pcntl \
+    pdo \
+    phar \
+    posix \
+    shmop \
+    sockets \
+    sysvmsg \
+    sysvsem \
+    sysvshm \
+    tidy \
+    xsl
+
+# Install PECL extensions separately to isolate errors
+RUN pecl install redis \
     && docker-php-ext-enable redis
+
+RUN pecl install memcache \
+    && docker-php-ext-enable memcache
+
+RUN pecl install memcached \
+    && docker-php-ext-enable memcached
+
+RUN pecl install igbinary \
+    && docker-php-ext-enable igbinary
+
+RUN pecl install msgpack \
+    && docker-php-ext-enable msgpack
+
+RUN pecl install mcrypt-1.0.6 \
+    && docker-php-ext-enable mcrypt
+
+RUN pecl install channel://pecl.php.net/gmagick-2.0.6RC1 \
+    && docker-php-ext-enable gmagick
 
 # Install SourceGuardian
 COPY loaders.linux-x86_64.tar.gz /tmp/
 RUN tar -xzf /tmp/loaders.linux-x86_64.tar.gz -C /tmp \
-    && mv /tmp/ixed.8.0.lin /usr/local/lib/php/extensions/ixed.8.0.lin \
-    && echo "extension=ixed.8.0.lin" > /usr/local/etc/php/conf.d/sourceguardian.ini
+    && mv /tmp/ixed.8.1.lin /usr/local/lib/php/extensions/ixed.8.1.lin \
+    && echo "extension=ixed.8.1.lin" > /usr/local/etc/php/conf.d/sourceguardian.ini
 
 # Install ionCube Loader
 COPY ioncube_loaders_lin_x86-64.tar.gz /tmp/
