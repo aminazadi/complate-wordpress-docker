@@ -1,6 +1,3 @@
-### فایل README.md کامل برای ریپازیتوری complate-wordpress-docker
-
-```markdown
 # Complete WordPress Docker Setup
 
 This repository contains a complete setup for running WordPress, MySQL, and phpMyAdmin using Docker. The setup includes a Dockerfile and a `docker-compose.yml` file to simplify the deployment process.
@@ -136,4 +133,4 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 ## Note
 
 This setup does not handle domain connection to the specified port. You need to configure domain settings separately.
-```
+
